@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Class Tracker">
+<title>Classroom Reward & Warning Tracker</title>
+<style>
+  :root { --gap: 10px; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; min-height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f3f4f6; color:#111827; }
+  body { padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
+  .app { max-width: 900px; margin: 0 auto; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+  h1 { font-size: clamp(18px, 3vw, 26px); margin:0; }
+  #newLesson { border:0; border-radius:12px; padding:12px 16px; font-size:16px; font-weight:700; background:#111827; color:white; touch-action:manipulation; }
+  .legend { display:flex; flex-wrap:wrap; gap:8px 14px; font-size:13px; margin: 0 0 10px; }
+  .grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--gap); }
+  .seat {
+    position:relative; min-width:0; aspect-ratio:1.15; border:3px solid #9ca3af;
+    border-radius:14px; background:white; overflow:hidden; user-select:none;
+    box-shadow:0 1px 3px rgba(0,0,0,.08);
+  }
+  .warning {
+    position:absolute; inset:0; border:0; background:transparent; width:100%; height:100%;
+    cursor:pointer; touch-action:manipulation;
+  }
+  .seat[data-level="1"] { background:#fde047; border-color:#ca8a04; }
+  .seat[data-level="2"] { background:#fb923c; border-color:#c2410c; }
+  .seat[data-level="3"] { background:#f472b6; border-color:#be185d; }
+  .seat[data-level="4"] { background:#ef4444; border-color:#991b1b; }
+  .reward {
+    position:absolute; right:7px; bottom:7px; z-index:2; min-width:48px; height:42px;
+    border:2px solid rgba(17,24,39,.35); border-radius:12px; background:rgba(255,255,255,.92);
+    font-size:20px; font-weight:800; cursor:pointer; touch-action:manipulation;
+  }
+  .reward:active, #newLesson:active { transform:scale(.97); }
+  .seatno {
+    position:absolute; left:9px; top:7px; z-index:1; font-size:12px; font-weight:800;
+    color:rgba(17,24,39,.55); pointer-events:none;
+  }
+  .seat[data-level="4"] .seatno { color:rgba(255,255,255,.8); }
+  .summary { margin-top:10px; display:flex; gap:14px; flex-wrap:wrap; font-weight:700; font-size:14px; }
+  .hint { margin-top:7px; color:#4b5563; font-size:12px; }
+  @media (max-width:520px) {
+    :root { --gap:6px; }
+    body { padding-left:7px; padding-right:7px; }
+    header { margin-bottom:7px; }
+    #newLesson { padding:10px 11px; font-size:14px; }
+    .legend { font-size:11px; gap:5px 8px; }
+    .seat { border-width:2px; border-radius:10px; }
+    .reward { min-width:40px; height:36px; right:4px; bottom:4px; font-size:17px; border-radius:9px; }
+    .seatno { left:6px; top:5px; font-size:10px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Class Tracker</h1>
+    <button id="newLesson" type="button">New Lesson</button>
+  </header>
+
+  <div class="legend" aria-label="Warning key">
+    <span>⬜ Clear</span><span>🟨 Yellow</span><span>🟧 Orange</span><span>🩷 Pink</span><span>🟥 Red</span><span>⭐ Reward</span>
+  </div>
+
+  <main class="grid" id="grid" aria-label="4 by 4 seating plan"></main>
+
+  <div class="summary">
+    <span id="warningSummary">Warnings: 0</span>
+    <span id="rewardSummary">Rewards: 0</span>
+  </div>
+  <div class="hint">Tap the main part of a seat for a warning. Tap ⭐ to add a reward. Nothing is saved when the page is refreshed.</div>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById('grid');
+  const warningSummary = document.getElementById('warningSummary');
+  const rewardSummary = document.getElementById('rewardSummary');
+
+  for (let i = 1; i <= 16; i++) {
+    const seat = document.createElement('div');
+    seat.className = 'seat';
+    seat.dataset.level = '0';
+    seat.dataset.rewards = '0';
+    seat.innerHTML = `
+      <span class="seatno">${i}</span>
+      <button class="warning" type="button" aria-label="Seat ${i}: add warning"></button>
+      <button class="reward" type="button" aria-label="Seat ${i}: add reward">⭐ <span>0</span></button>`;
+    grid.appendChild(seat);
+  }
+
+  function updateSummary() {
+    const seats = [...document.querySelectorAll('.seat')];
+    const warned = seats.filter(s => Number(s.dataset.level) > 0).length;
+    const rewards = seats.reduce((n, s) => n + Number(s.dataset.rewards), 0);
+    warningSummary.textContent = `Warnings: ${warned}`;
+    rewardSummary.textContent = `Rewards: ${rewards}`;
+  }
+
+  grid.addEventListener('click', (e) => {
+    const seat = e.target.closest('.seat');
+    if (!seat) return;
+
+    if (e.target.closest('.reward')) {
+      const next = Number(seat.dataset.rewards) + 1;
+      seat.dataset.rewards = String(next);
+      seat.querySelector('.reward span').textContent = next;
+    } else if (e.target.closest('.warning')) {
+      seat.dataset.level = String((Number(seat.dataset.level) + 1) % 5);
+    }
+    updateSummary();
+  });
+
+  document.getElementById('newLesson').addEventListener('click', () => {
+    const changed = [...document.querySelectorAll('.seat')].some(
+      s => s.dataset.level !== '0' || s.dataset.rewards !== '0'
+    );
+    if (changed && !confirm('Clear all warnings and rewards for a new lesson?')) return;
+    document.querySelectorAll('.seat').forEach(s => {
+      s.dataset.level = '0';
+      s.dataset.rewards = '0';
+      s.querySelector('.reward span').textContent = '0';
+    });
+    updateSummary();
+  });
+
+  updateSummary();
+})();
+</script>
+</body>
+</html>
