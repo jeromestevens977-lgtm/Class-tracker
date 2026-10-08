@@ -2,134 +2,46 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Class Tracker">
-<title>Classroom Reward & Warning Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classroom • Seat tracker</title>
 <style>
-  :root { --gap: 10px; }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; min-height: 100%; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f3f4f6; color:#111827; }
-  body { padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom)); }
-  .app { max-width: 900px; margin: 0 auto; }
-  header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
-  h1 { font-size: clamp(18px, 3vw, 26px); margin:0; }
-  #newLesson { border:0; border-radius:12px; padding:12px 16px; font-size:16px; font-weight:700; background:#111827; color:white; touch-action:manipulation; }
-  .legend { display:flex; flex-wrap:wrap; gap:8px 14px; font-size:13px; margin: 0 0 10px; }
-  .grid { display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--gap); }
-  .seat {
-    position:relative; min-width:0; aspect-ratio:1.15; border:3px solid #9ca3af;
-    border-radius:14px; background:white; overflow:hidden; user-select:none;
-    box-shadow:0 1px 3px rgba(0,0,0,.08);
-  }
-  .warning {
-    position:absolute; inset:0; border:0; background:transparent; width:100%; height:100%;
-    cursor:pointer; touch-action:manipulation;
-  }
-  .seat[data-level="1"] { background:#fde047; border-color:#ca8a04; }
-  .seat[data-level="2"] { background:#fb923c; border-color:#c2410c; }
-  .seat[data-level="3"] { background:#f472b6; border-color:#be185d; }
-  .seat[data-level="4"] { background:#ef4444; border-color:#991b1b; }
-  .reward {
-    position:absolute; right:7px; bottom:7px; z-index:2; min-width:48px; height:42px;
-    border:2px solid rgba(17,24,39,.35); border-radius:12px; background:rgba(255,255,255,.92);
-    font-size:20px; font-weight:800; cursor:pointer; touch-action:manipulation;
-  }
-  .reward:active, #newLesson:active { transform:scale(.97); }
-  .seatno {
-    position:absolute; left:9px; top:7px; z-index:1; font-size:12px; font-weight:800;
-    color:rgba(17,24,39,.55); pointer-events:none;
-  }
-  .seat[data-level="4"] .seatno { color:rgba(255,255,255,.8); }
-  .summary { margin-top:10px; display:flex; gap:14px; flex-wrap:wrap; font-weight:700; font-size:14px; }
-  .hint { margin-top:7px; color:#4b5563; font-size:12px; }
-  @media (max-width:520px) {
-    :root { --gap:6px; }
-    body { padding-left:7px; padding-right:7px; }
-    header { margin-bottom:7px; }
-    #newLesson { padding:10px 11px; font-size:14px; }
-    .legend { font-size:11px; gap:5px 8px; }
-    .seat { border-width:2px; border-radius:10px; }
-    .reward { min-width:40px; height:36px; right:4px; bottom:4px; font-size:17px; border-radius:9px; }
-    .seatno { left:6px; top:5px; font-size:10px; }
-  }
+:root{font-family:Inter,Segoe UI,Arial,sans-serif;color:#183b39;background:#f3f5f1;font-synthesis:none}*{box-sizing:border-box}body{margin:0}header,main,footer{max-width:1500px;margin:auto;padding:26px 32px}header{display:flex;align-items:center;justify-content:space-between;gap:20px}h1{font-size:30px;letter-spacing:-1px;margin:5px 0}p{line-height:1.5;margin:6px 0}.eyebrow{font-size:11px;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:#58766c}.subtitle,.note{font-size:14px;color:#536b65}.toolbar{display:flex;flex-wrap:wrap;gap:8px}button,a.jump{font:inherit;font-size:14px;border:1px solid #b9cbc1;border-radius:9px;padding:11px 16px;background:white;color:#183b39;cursor:pointer;text-decoration:none;font-weight:650}button:hover,a.jump:hover{filter:brightness(.96)}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #176bcb;outline-offset:3px}button:disabled{opacity:.45;cursor:default}.primary{background:#183b39;color:white;border-color:#183b39}main{padding-top:0}.section{background:#fff;border:1px solid #d8e1d9;border-radius:18px;padding:24px;margin-bottom:28px;box-shadow:0 6px 24px #1c3c3010;scroll-margin-top:12px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}h2{font-size:22px;margin:0 0 5px}.badge{font-size:12px;border-radius:30px;background:#e9f3ec;padding:7px 12px;white-space:nowrap}.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin:18px 0}.legend span{display:flex;align-items:center;gap:6px}.dot{width:13px;height:13px;border:1px solid #66766c;border-radius:50%}.room-scroll{overflow-x:auto;padding:4px}.room{min-width:820px}.front{width:40%;margin:0 auto 20px;background:#e8eeea;border-top:4px solid #507667;border-radius:0 0 8px 8px;text-align:center;padding:7px;font-size:11px;letter-spacing:2px;font-weight:bold}.tables{display:grid;grid-template-columns:1fr 1fr 28px 1fr 1fr;gap:16px 12px}.table:nth-child(4n+1){grid-column:1}.table:nth-child(4n+2){grid-column:2}.table:nth-child(4n+3){grid-column:4}.table:nth-child(4n){grid-column:5}.table{background:#edf1ea;border:1px solid #d9dfd2;border-radius:12px;padding:7px}.table-label{text-align:center;font-size:10px;color:#62776b;letter-spacing:1.2px;text-transform:uppercase;margin:0 0 6px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:6px}.seat{border:1px solid #9cab9d;border-radius:8px;overflow:hidden;min-width:0;color:#202e27;transition:background .15s}.white{background:#fff}.yellow{background:#ffe691}.orange{background:#ffbf80}.pink{background:#f6b7d2}.red{background:#f09089}.seat-id{font-size:9px;letter-spacing:1px;padding:7px 8px 0;opacity:.75}.name{display:block;width:calc(100% - 12px);margin:3px 6px 4px;border:1px solid transparent;border-radius:4px;background:transparent;font:inherit;font-weight:700;font-size:13px;color:inherit;padding:4px 2px;text-overflow:ellipsis}.name:hover,.name:focus{border-color:#7e9585;background:#ffffff70}.warning{width:100%;background:transparent;border:0;border-radius:0;border-top:1px solid #20382c20;border-bottom:1px solid #20382c20;font-size:11px;padding:8px 2px}.rewards{display:flex;align-items:center;justify-content:space-between;gap:2px;padding:4px}.rewards button{padding:3px 7px;min-height:30px;font-size:16px;border-color:#20382c30;background:#ffffff70;border-radius:5px}.stars{font-size:13px;font-weight:750;white-space:nowrap}.student-name{font-size:14px;font-weight:700;padding:8px;overflow-wrap:anywhere}.student-status{font-size:11px;padding:0 8px 8px}.student-stars{padding:7px 8px;border-top:1px solid #20382c20;font-size:15px;font-weight:bold}.room-bottom{text-align:center;font-size:10px;color:#78887d;letter-spacing:2px;padding:16px 0 0}.status{font-size:12px;min-height:20px;color:#536b65}footer{padding-top:0;font-size:12px;color:#65786d}body.projecting header,body.projecting #teacher,body.projecting footer{display:none}body.projecting main{padding-top:20px}body.projecting #student{margin:0}#exitProjection{display:none}body.projecting #exitProjection{display:inline-block}@media(max-width:900px){header{align-items:flex-start;flex-direction:column}header,main,footer{padding-left:16px;padding-right:16px}.section{padding:16px}.section-head{align-items:flex-start}h1{font-size:26px}.tables{gap:10px 8px}.room{min-width:820px}}@media print{header,.toolbar,.legend,.note,footer,#teacher,#project,#exitProjection{display:none!important}.section{border:0;box-shadow:none;padding:0}.room{min-width:0}.tables{gap:8px;grid-template-columns:1fr 1fr 12px 1fr 1fr}body{background:white}.seat{print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.reward-display{display:flex;flex-wrap:wrap;align-content:flex-start;gap:3px;min-height:48px;padding:7px;border-top:1px solid #20382c20}.reward-star{display:inline-block;font-size:34px;line-height:1;color:#ffce32;-webkit-text-stroke:1px #896300;text-shadow:0 2px 1px #6e500025}.reward-overflow{font-size:12px;width:100%;font-weight:700}
+.teacher-front{margin:20px auto 0;border-top:0;border-bottom:4px solid #507667;border-radius:8px 8px 0 0}.teacher-back{padding:0 0 16px}.student-name:empty{min-height:34px}
+.tables{grid-template-columns:.5fr 1fr 1fr 28px 1fr 1fr .5fr}.room{min-width:1000px}.spare-table .pair{grid-template-columns:1fr}.spare-table{align-self:start}.seat-id{padding-bottom:7px}
 </style>
 </head>
 <body>
-<div class="app">
-  <header>
-    <h1>Class Tracker</h1>
-    <button id="newLesson" type="button">New Lesson</button>
-  </header>
-
-  <div class="legend" aria-label="Warning key">
-    <span>⬜ Clear</span><span>🟨 Yellow</span><span>🟧 Orange</span><span>🩷 Pink</span><span>🟥 Red</span><span>⭐ Reward</span>
-  </div>
-
-  <main class="grid" id="grid" aria-label="4 by 4 seating plan"></main>
-
-  <div class="summary">
-    <span id="warningSummary">Warnings: 0</span>
-    <span id="rewardSummary">Rewards: 0</span>
-  </div>
-  <div class="hint">Tap the main part of a seat for a warning. Tap ⭐ to add a reward. Nothing is saved when the page is refreshed.</div>
-</div>
-
+<header><div><div class="eyebrow">A fresh start. Every lesson.</div><h1>Classroom tracker</h1><p class="subtitle">35 seats · 16 tables + 3 spare seats</p></div><div class="toolbar"><button id="undo" disabled>↶ Undo</button><a class="jump" href="#student">Student view ↓</a><button id="reset" class="primary">New Lesson</button></div></header>
+<main>
+<section class="section" id="teacher" aria-labelledby="teacherTitle"><div class="section-head"><div><h2 id="teacherTitle">Teacher view</h2><p class="note">Click RWC to move to the next warning. Use + or − for stars.</p></div><span class="badge">Teacher controls</span></div><div class="legend" aria-label="RWC warning cycle"><span>RWC</span><span><i class="dot white" aria-label="White"></i> → <i class="dot yellow" aria-label="Yellow"></i> → <i class="dot orange" aria-label="Orange"></i> → <i class="dot pink" aria-label="Pink"></i> → <i class="dot red" aria-label="Red"></i> → <i class="dot white" aria-label="White"></i></span></div><div class="room-scroll"><div class="room"><div class="room-bottom teacher-back">BACK OF ROOM · CENTRAL AISLE</div><div id="teacherTables" class="tables"></div><div class="front teacher-front">BOARD / FRONT OF ROOM</div></div></div><p class="status" id="status" role="status" aria-live="polite"></p></section>
+<section class="section" id="student" aria-labelledby="studentTitle"><div class="section-head"><div><div class="eyebrow">Our classroom</div><h2 id="studentTitle">Student view</h2><p class="note">The same seats, colours and stars — updated live.</p></div><div class="toolbar"><button id="project">Present student view</button><button id="exitProjection">Back to teacher</button></div></div><div class="room-scroll"><div class="room"><div class="front">BOARD / FRONT OF ROOM</div><div id="studentTables" class="tables"></div><div class="room-bottom">BACK OF ROOM · CENTRAL AISLE</div></div></div></section>
+</main><footer>Saved automatically in this browser when storage is available. New Lesson clears colours and stars for all 35 seats. Undo restores the previous change, including a lesson reset. Student view mirrors this page; it does not sync across devices.</footer>
 <script>
 (() => {
-  const grid = document.getElementById('grid');
-  const warningSummary = document.getElementById('warningSummary');
-  const rewardSummary = document.getElementById('rewardSummary');
-
-  for (let i = 1; i <= 16; i++) {
-    const seat = document.createElement('div');
-    seat.className = 'seat';
-    seat.dataset.level = '0';
-    seat.dataset.rewards = '0';
-    seat.innerHTML = `
-      <span class="seatno">${i}</span>
-      <button class="warning" type="button" aria-label="Seat ${i}: add warning"></button>
-      <button class="reward" type="button" aria-label="Seat ${i}: add reward">⭐ <span>0</span></button>`;
-    grid.appendChild(seat);
-  }
-
-  function updateSummary() {
-    const seats = [...document.querySelectorAll('.seat')];
-    const warned = seats.filter(s => Number(s.dataset.level) > 0).length;
-    const rewards = seats.reduce((n, s) => n + Number(s.dataset.rewards), 0);
-    warningSummary.textContent = `Warnings: ${warned}`;
-    rewardSummary.textContent = `Rewards: ${rewards}`;
-  }
-
-  grid.addEventListener('click', (e) => {
-    const seat = e.target.closest('.seat');
-    if (!seat) return;
-
-    if (e.target.closest('.reward')) {
-      const next = Number(seat.dataset.rewards) + 1;
-      seat.dataset.rewards = String(next);
-      seat.querySelector('.reward span').textContent = next;
-    } else if (e.target.closest('.warning')) {
-      seat.dataset.level = String((Number(seat.dataset.level) + 1) % 5);
-    }
-    updateSummary();
-  });
-
-  document.getElementById('newLesson').addEventListener('click', () => {
-    const changed = [...document.querySelectorAll('.seat')].some(
-      s => s.dataset.level !== '0' || s.dataset.rewards !== '0'
-    );
-    if (changed && !confirm('Clear all warnings and rewards for a new lesson?')) return;
-    document.querySelectorAll('.seat').forEach(s => {
-      s.dataset.level = '0';
-      s.dataset.rewards = '0';
-      s.querySelector('.reward span').textContent = '0';
-    });
-    updateSummary();
-  });
-
-  updateSummary();
+'use strict';
+const KEY='classroom-tracker-32-v1', colours=['white','yellow','orange','pink','red'];
+const defaults=()=>Array.from({length:35},(_,i)=>({name:'',warning:0,stars:0}));
+const copy=x=>JSON.parse(JSON.stringify(x));
+let seats=defaults(),history=[],storageOK=true;
+try{const saved=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(saved)&&[32,34,35].includes(saved.length)&&saved.every(s=>s&&typeof s.name==='string'&&s.name.length<=40&&Number.isInteger(s.warning)&&s.warning>=0&&s.warning<5&&Number.isSafeInteger(s.stars)&&s.stars>=0))seats=saved;}catch{storageOK=false;}
+while(seats.length<35)seats.push({name:'',warning:0,stars:0});
+seats=seats.map((s,i)=>({...s,name:s.name===`Student ${i+1}`?'':s.name}));
+const $=id=>document.getElementById(id), teacherRefs=[],studentRefs=[];
+function element(tag,cls,text){const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=text;return el;}
+function build(target,editable,refs){for(let t=0;t<19;t++){const spare=t>=16;const tableIndex=spare?t:(editable?15-t:t);const table=element('div','table');table.style.gridColumn=String(spare?(t===18?(editable?7:1):(editable?1:7)):[2,3,5,6][t%4]);table.style.gridRow=String(spare?(t===16?3:(editable?1:5)):Math.floor(t/4)+(editable?2:1));if(spare)table.classList.add('spare-table');table.append(element('div','table-label',spare?'Spare':`Table ${tableIndex+1}`));const pair=element('div','pair');for(let p=0;p<(spare?1:2);p++){const i=spare?32+t-16:tableIndex*2+(editable?1-p:p),seat=element('div','seat');seat.dataset.seat=String(i+1);seat.append(element('div','seat-id',`SEAT ${String(i+1).padStart(2,'0')}`));let warning,stars,minus,plus;
+if(editable){warning=element('button','warning');warning.addEventListener('click',()=>change(()=>seats[i].warning=(seats[i].warning+1)%5,`RWC updated for ${seats[i].name||`seat ${i+1}`}.`));const rewards=element('div','rewards');minus=element('button','','−');plus=element('button','','+');stars=element('span','stars');minus.addEventListener('click',()=>{if(seats[i].stars>0)change(()=>seats[i].stars--,`Star removed from ${seats[i].name||`seat ${i+1}`}.`);});plus.addEventListener('click',()=>{if(seats[i].stars<Number.MAX_SAFE_INTEGER)change(()=>seats[i].stars++,`Star added to ${seats[i].name||`seat ${i+1}`}.`);});rewards.append(minus,stars,plus);seat.append(warning,rewards);
+}else{warning=element('div','student-status');stars=element('div','student-stars');seat.append(warning,stars);}const rewardDisplay=element('div','reward-display');rewardDisplay.setAttribute('aria-hidden','true');seat.append(rewardDisplay);pair.append(seat);refs[i]={seat,warning,stars,minus,plus,rewardDisplay};}table.append(pair);$(target).append(table);}}
+function render(){seats.forEach((s,i)=>{const colour=colours[s.warning],label=colour[0].toUpperCase()+colour.slice(1);for(const [refs,editable]of [[teacherRefs,true],[studentRefs,false]]){const r=refs[i];r.seat.className=`seat ${colour}`;r.stars.textContent=`★ ${s.stars}`;r.stars.setAttribute('aria-label',`${s.stars} stars`);if(r.rewardDisplay.dataset.count!==String(s.stars)){r.rewardDisplay.replaceChildren();const fragment=document.createDocumentFragment();for(let n=0;n<Math.min(s.stars,1000);n++)fragment.append(element('span','reward-star','★'));if(s.stars>1000)fragment.append(element('span','reward-overflow',`+ ${s.stars-1000} more stars`));r.rewardDisplay.append(fragment);r.rewardDisplay.dataset.count=String(s.stars);}if(editable){r.warning.textContent='RWC';r.warning.setAttribute('aria-label',`${s.name||`Seat ${i+1}`}: ${label}. Change to ${colours[(s.warning+1)%5]}`);r.minus.disabled=s.stars===0;r.minus.setAttribute('aria-label',`Remove one star from ${s.name||`seat ${i+1}`}`);r.plus.setAttribute('aria-label',`Add one star to ${s.name||`seat ${i+1}`}`);}else{r.warning.textContent='RWC';r.warning.setAttribute('aria-label',`RWC: ${label}`);}}});$('undo').disabled=history.length===0;}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(seats));storageOK=true;}catch{storageOK=false;}}
+function announce(message){$('status').textContent=message+(storageOK?' Changes saved in this browser.':' Browser storage unavailable; keep this page open to retain this lesson.');}
+function change(fn,message){history.push(copy(seats));if(history.length>200)history.shift();fn();save();render();announce(message);}
+$('undo').addEventListener('click',()=>{if(!history.length)return;seats=history.pop();save();render();announce('Previous change undone.');});
+$('reset').addEventListener('click',()=>change(()=>{seats=seats.map(s=>({...s,warning:0,stars:0}));},'New lesson started. Use Undo to restore the previous lesson.'));
+$('project').addEventListener('click',()=>{document.body.classList.add('projecting');window.scrollTo(0,0);$('exitProjection').focus();});
+function exit(){document.body.classList.remove('projecting');$('project').focus();}
+$('exitProjection').addEventListener('click',exit);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('projecting'))exit();});
+build('teacherTables',true,teacherRefs);build('studentTables',false,studentRefs);render();announce('Ready for your lesson.');
 })();
 </script>
 </body>
